@@ -55,16 +55,11 @@ class Slack:
             If there is an error with the POST request.
         """
 
-        message = "```{0}```".format(text)
-        template = {
-            "text": message  # limit 40000
-        }
-
         headers = {'content-type': 'application/json'}
 
         if self.webhook_url not in (1, "1", ''):
             r = requests.post(self.webhook_url,
-                              data=json.dumps(template), headers=headers)
+                              data=text, headers=headers)
 
             if r.status_code != 200:
                 logger.error(r.content)
