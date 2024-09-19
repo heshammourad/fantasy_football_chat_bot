@@ -1,10 +1,11 @@
-from chat.slack import Slack
 from espn_api.football import League
+from gamedaybot.chat.slack import Slack
 
 import datetime
+import json
 import os
 import pytz
-import recap
+import messages.recap as recap
 
 def main():
     espn_s2 = os.getenv('ESPN_S2')
@@ -17,14 +18,14 @@ def main():
 
     now = datetime.datetime.now(pytz.timezone('America/Los_Angeles'))
     weekday = now.strftime('%a')
-    text = ''
-    if weekday == 'Tue':
-        if now.hour < 24: # TODO: Update to 12
-            text = recap.get(league)
+    blocks = []
+    # if weekday == 'Tue':
+    #     if now.hour < 12:
+    blocks = recap.get(league)
 
-    print(text)
-    slack_bot = Slack(slack_webhook_url)
-    slack_bot.send_message(text)
+    print(json.dumps(blocks, indent=2))
+    # slack_bot = Slack(slack_webhook_url)
+    # slack_bot.send_message(blocks)
 
 if __name__ == '__main__':
     main()

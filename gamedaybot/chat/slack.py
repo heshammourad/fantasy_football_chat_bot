@@ -35,31 +35,12 @@ class Slack:
     def __repr__(self):
         return "Slack Webhook Url(%s)" % self.webhook_url
 
-    def send_message(self, text: str):
-        """
-        Sends a message to the Slack channel.
-
-        Parameters
-        ----------
-        text : str
-            The message to be sent to the Slack channel.
-
-        Returns
-        -------
-        r : requests.Response
-            The response object of the POST request.
-
-        Raises
-        ------
-        SlackException
-            If there is an error with the POST request.
-        """
-
+    def send_message(self, blocks: str):
         headers = {'content-type': 'application/json'}
 
         if self.webhook_url not in (1, "1", ''):
             r = requests.post(self.webhook_url,
-                              data=text, headers=headers)
+                              data=json.dumps({'blocks': blocks}), headers=headers)
 
             if r.status_code != 200:
                 logger.error(r.content)
