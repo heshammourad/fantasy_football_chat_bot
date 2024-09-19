@@ -42,6 +42,10 @@ teams = {
 }
 
 
+def get_teams():
+    return teams.keys()
+
+
 def get_team(abbrev: str) -> str:
     return f':{get_team_emoji(abbrev)}: _{get_team_name(abbrev)}_'
 

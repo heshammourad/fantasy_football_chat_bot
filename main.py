@@ -5,6 +5,7 @@ import datetime
 import json
 import os
 import pytz
+import messages.leaderboards as leaderboards
 import messages.recap as recap
 
 def main():
@@ -19,9 +20,10 @@ def main():
     now = datetime.datetime.now(pytz.timezone('America/Los_Angeles'))
     weekday = now.strftime('%a')
     blocks = []
-    # if weekday == 'Tue':
-    #     if now.hour < 12:
-    blocks = recap.get(league)
+    if weekday == 'Tue':
+        if now.hour < 12:
+            blocks = recap.get(league)
+    blocks = leaderboards.get(league)
 
     print(json.dumps(blocks, indent=2))
     # slack_bot = Slack(slack_webhook_url)
