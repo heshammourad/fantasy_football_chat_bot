@@ -1,3 +1,4 @@
+import gamedaybot.espn.functionality as functionality
 import json
 import utils
 
@@ -17,7 +18,7 @@ teams = {team: {category: 0 for category in list(positions.keys()) + ['TD']} for
 def get(league):
     leaderboards = [utils.get_header('Frivolities')]
     leaderboards.extend(get_leaderboards(league))
-    leaderboards.extend(get_trophies(league.box_scores(league.current_week - 1)))
+    leaderboards.extend(get_trophies(league))
     return leaderboards
 
 
@@ -65,8 +66,37 @@ def process(team_abbrev, lineup):
         counted_scores = sorted_scores[-positions[position]['top']:]
         team[position] += sum(counted_scores)
 
-def get_trophies(box_scores):
+def get_trophies(league):
+    box_scores = league.box_scores(league.current_week - 1)
+
+    functionality.optimal_team_scores(league, full_report=True)
+
     trophies_section = utils.get_section_header('Trophies')
+
+    scores = []
+    results = []
+    performances = []
+    optimal_scores = {}
+    
+    for box_score in box_scores:
+        away_team = box_score.away_team
+        away_score = box_score.away_score
+        home_team = box_score.home_team
+        home_score = box_score.home_score
+        scores.extend([(away_team, away_score), (home_team, home_score)])
+
+        results.append((away_team, home_team, away_score, home_score))
+        
+        away_performance = away_score - box_score.away_projected
+        home_performance = home_score - box_score.home_projected
+        performances.extend([(away_team, away_performance), (home_team, home_performance)])
+    
+    sorted_scores = sorted(scores, key=lambda x: x[1], reverse=True)
+    sorted_results = sorted(results, key=lambda x: abs(x[2] - x[3]), reverse=True)
+    sorted_performances = sorted(performances, key=lambda x: x[1], reverse=True)
+    accuracy = functionality.optimal_team_scores(league, full_report=True)
+    print(accuracy)
+
     return trophies_section
 
 def generate_mrkdwn_text(text):
