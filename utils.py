@@ -58,6 +58,27 @@ def get_team_name(abbrev: str) -> str:
     return teams[abbrev]['name']
 
 
+def get_fields(fields):
+    fields_block = []
+    for i in range(0, len(fields), 2):
+        fields_section = [get_mrkdwn_text(field) for field in fields[i:i + 2]]
+        fields_block.append({
+            'type': 'section',
+            'fields': fields_section
+        })
+    return fields_block
+
+
+def get_header(text):
+    return {
+        'type': 'header',
+        'text': {
+            'type': 'plain_text',
+            'text': text
+        }
+    }
+
+
 def get_section_header(header):
     return [
         {'type': 'divider'},
@@ -65,13 +86,17 @@ def get_section_header(header):
     ]
 
 
+def get_mrkdwn_text(text):
+    return {
+        'type': 'mrkdwn',
+        'text': text
+    }
+
+
 def get_mrkdwn_from_arr(arr):
     return {
         'type': 'section',
-        'text': {
-            'type': 'mrkdwn',
-            'text': '\n'.join(arr)
-        }
+        'text': get_mrkdwn_text('\n'.join(arr))
     }
 
 
@@ -107,10 +132,11 @@ def get_medalists(teams, field_getter, decimal_places=0):
             break
         prev_medal = medal
 
+        try:
+            team_abbrev = team.team_abbrev
+        except AttributeError:
+            team_abbrev = team['team_abbrev']
+
         medalists.append(f':{medal}_place_medal: *{format_number(value, leading_value_length,
-                         decimal_places=decimal_places)}* - {get_team(team.team_abbrev)}')
+                         decimal_places=decimal_places)}* - {get_team(team_abbrev)}')
     return medalists
-
-
-def create_dict(keys, substructure):
-    return {key: substructure.copy() for key in keys}

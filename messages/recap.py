@@ -6,26 +6,19 @@ def get(league):
     box_scores = league.box_scores(week=week)
     standings = league.standings()
 
-    summary = [
-        {
-            'type': 'header',
-            'text': {
-                    'type': 'plain_text',
-                    'text': f'Week {week} Recap'
-            }
-        }
-    ]
+    recap = [utils.get_header(f'Week {week} Recap')]
 
-    summary.extend(get_results(box_scores))
-    summary.extend(get_standings(standings))
-    summary.extend(get_prizes(standings, week))
+    recap.extend(get_results(box_scores))
+    recap.extend(get_standings(standings))
+    recap.extend(get_prizes(standings, week))
 
-    return summary
+    return recap
 
 
 def get_results(box_scores):
     results = utils.get_section_header('Results')
 
+    scoreboard = []
     for score in box_scores:
         away_score = utils.format_number(score.away_score, target_length=3, decimal_places=2)
         home_score = utils.format_number(score.home_score, target_length=3, decimal_places=2)
@@ -35,8 +28,9 @@ def get_results(box_scores):
             home_score = f'*{home_score}*'
 
         scores = [(score.away_team.team_abbrev, away_score), (score.home_team.team_abbrev, home_score)]
-        results.append(utils.get_mrkdwn_from_arr(map(lambda x: f'{x[1]}\t{utils.get_team(x[0])}', scores)))
+        scoreboard.append('\n'.join(map(lambda x: f'{x[1]}\t{utils.get_team(x[0])}', scores)))
 
+    results.extend(utils.get_fields(scoreboard))
     return results
 
 
