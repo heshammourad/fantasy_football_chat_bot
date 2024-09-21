@@ -23,11 +23,12 @@ def main():
     if weekday == 'Tue':
         if now.hour < 12:
             blocks = recap.get(league)
-    blocks = leaderboards.get(league)
+        else:
+            blocks = leaderboards.get(league)
 
     print(json.dumps(blocks, indent=2))
-    # slack_bot = Slack(slack_webhook_url)
-    # slack_bot.send_message(blocks)
+    slack_bot = Slack(slack_webhook_url)
+    slack_bot.send_message(blocks)
 
 if __name__ == '__main__':
     main()

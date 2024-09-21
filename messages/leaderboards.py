@@ -24,7 +24,7 @@ trophies = [
 
 
 def get(league):
-    leaderboards = [utils.get_header('Frivolities')]
+    leaderboards = [utils.get_header('Superlatives')]
     leaderboards.extend(get_leaderboards(league))
     leaderboards.extend(get_trophies(league))
     return leaderboards
@@ -108,42 +108,60 @@ def get_trophies(league):
     # High and Low Scores
     sorted_scores = sorted(scores, key=lambda x: x[1], reverse=True)
     high_score, low_score = sorted_scores[0], sorted_scores[-1]
-    trophies_values.extend([f'*{utils.format_number(value, decimal_places=2)}* - {utils.get_team(team)
-                                                                                  }' for team, value in [high_score, low_score]])
+    trophies_values.append(
+        f'{utils.get_team(high_score[0])} led the league with *{utils.format_number(high_score[1], decimal_places=2)}* points')
+    trophies_values.append(
+        f'{utils.get_team(low_score[0])} had the lowest score with *{utils.format_number(low_score[1], decimal_places=2)}* points')
 
     # Blowout and Squeaker
     sorted_results = sorted(results, key=lambda x: abs(x[2] - x[3]), reverse=True)
     blowout, squeaker = sorted_results[0], sorted_results[-1]
-    trophies_values.extend([f'*{utils.format_number(win_score - lose_score, decimal_places=2)
-                                }* - {utils.get_team(winner)} def. {utils.get_team(loser)}' for (winner, loser, win_score, lose_score) in [blowout, squeaker]])
+    trophies_values.append(f'{utils.get_team(blowout[0])} blew out {utils.get_team(blowout[1])} by *{utils.format_number(
+        blowout[2] - blowout[3], decimal_places=2)}* points ({utils.format_number(blowout[2], decimal_places=2)}-{utils.format_number(blowout[3], decimal_places=2)})')
+    trophies_values.append(f'{utils.get_team(squeaker[1])} lost to {utils.get_team(squeaker[0])} by *{utils.format_number(
+        squeaker[2] - squeaker[3], decimal_places=2)}* points ({utils.format_number(squeaker[2], decimal_places=2)}-{utils.format_number(squeaker[3], decimal_places=2)})')
 
     # Overachiever and Underachiever
     sorted_performances = sorted(performances, key=lambda x: x[1], reverse=True)
     overachiever, underachiever = sorted_performances[0], sorted_performances[-1]
-    trophies_values.extend([f'*{utils.format_number(abs(value), decimal_places=2)}* - {utils.get_team(team)
-                                                                                  }' for team, value in [overachiever, underachiever]])
+    trophies_values.append(f'{utils.get_team(
+        overachiever[0])} were over their projection by *{utils.format_number(abs(overachiever[1]), decimal_places=2)}* points')
+    trophies_values.append(f'{utils.get_team(
+        underachiever[0])} were under their projection by *{utils.format_number(abs(underachiever[1]), decimal_places=2)}* points')
 
     # Best and Worst Managers
     accuracy = list(functionality.optimal_team_scores(league, full_report=True).items())
     best, worst = accuracy[0], accuracy[-1]
-    trophies_values.extend([f'*{utils.format_number(data[3], decimal_places=1)
-                                }%* - {utils.get_team(team.team_abbrev)}' for team, data in [best, worst]])
+    trophies_values.append(f'{utils.get_team(
+        best[0].team_abbrev)} scored *{utils.format_number(best[1][3], decimal_places=1)}%* of their optimal score')
+    trophies_values.append(f'{utils.get_team(worst[0].team_abbrev)} left {utils.format_number(
+        worst[1][2], decimal_places=2)} points on the bench, scoring only *{utils.format_number(worst[1][3], decimal_places=1)}%* of their optimal score')
 
     # Studs and Duds
     player_achievement = sorted([p for p in players], key=lambda x: x[1].points - x[1].projected_points, reverse=True)
-    stud, dud = player_achievement[0], player_achievement[-1]
-    trophies_values.extend([f'*{utils.format_number(player.points - player.projected_points,
-                           decimal_places=2)}* - {player.name} {utils.get_team(team)}' for team, player, _ in [stud, dud]])
+    studs = search_players(player_achievement, condition=lambda x: x[2] > 0 and x[1].points -
+                           x[1].projected_points > x[2], sort=lambda x: x[1].points - x[1].projected_points - x[2], reverse=True)
+    stud = studs[0] if studs else player_achievement[0]
+    stud_text = f'*{stud[1].name}* - {utils.get_team(stud[0])} outperformed projection by *{
+        utils.format_number(stud[1].points - stud[1].projected_points, decimal_places=2)}*'
+    if studs:
+        stud_text += f' in a {utils.format_number(stud[2], decimal_places=2)} win'
+    trophies_values.append(stud_text)
 
-    # These take into account margin, but omitting it for now
-    # studs = search_players(player_achievement, condition=lambda x: x[2] > 0 and x[1].points -
-    #                        x[1].projected_points > x[2], sort=lambda x: x[1].points - x[1].projected_points - x[2], reverse=True)
-    # duds = search_players(player_achievement, condition=lambda x: x[2] < 0 and x[1].points -
-    #                       x[1].projected_points < x[2], sort=lambda x: x[1].points - x[1].projected_points - x[2])
+    duds = search_players(player_achievement, condition=lambda x: x[2] < 0 and x[1].points -
+                          x[1].projected_points < x[2], sort=lambda x: x[1].points - x[1].projected_points - x[2])
+    dud = duds[0] if duds else player_achievement[-1]
+    dud_text = f'*{dud[1].name}* - {utils.get_team(dud[0])} underperformed projection by *{
+        utils.format_number(dud[1].projected_points - dud[1].points, decimal_places=2)}*'
+    if duds:
+        dud_text += f' in a ${utils.format_number(dud[2], decimal_places=2)} loss'
+    trophies_values.append(dud_text)
 
+    # Benchwarmer
     sorted_benchwarmers = sorted(benchwarmers, key=lambda x: x[1][1].points - x[1][0].points, reverse=True)
     benchwarmer_team, (starter, benchwarmer) = sorted_benchwarmers[0]
-    trophies_values.append(f'*{utils.format_number(benchwarmer.points - starter.points, decimal_places=2)}* - {utils.get_team(benchwarmer_team)}')
+    trophies_values.append(f'*{benchwarmer.name}* - {utils.get_team(benchwarmer_team)} scored *{utils.format_number(benchwarmer.points, decimal_places=positions[benchwarmer.position]['decimals'])}* points on the bench while {
+                           starter.name} scored just {utils.format_number(starter.points, decimal_places=positions[starter.position]['decimals'])}')
 
     trophies_headers = [f':{emoji}: *{name}*' for (name, emoji) in trophies]
     trophies_section.extend(generate_fields(trophies_headers, trophies_values))
