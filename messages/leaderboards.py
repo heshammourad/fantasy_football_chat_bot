@@ -13,6 +13,14 @@ positions = {
 }
 td_keys = ['defensivePlusSpecialTeamsTouchdowns', 'passingTouchdowns', 'receivingTouchdowns', 'rushingTouchdowns']
 teams = {team: {category: 0 for category in list(positions.keys()) + ['TD']} for team in utils.get_teams()}
+trophies = [
+    ('High Score', 'fire'), ('Low Score', 'ice_cube'),
+    ('Blowout', 'sunglasses'), ('Squeaker', 'sweat_smile'),
+    ('Overachiever', 'chart_with_upwards_trend'), ('Underachiever', 'chart_with_downwards_trend'),
+    ('Best Manager', 'white_check_mark'), ('Worst Manager', 'x'),
+    ('Stud', '+1'), ('Dud', '-1'),
+    ('Benchwarmer', 'dotted_fire')
+]
 
 
 def get(league):
@@ -33,19 +41,12 @@ def get_leaderboards(league):
     leaderboards_fields = []
     for i, (category, data) in enumerate(positions.items()):
         medalists = utils.get_medalists([{'team_abbrev': team, **stats}
-                                              for team, stats in teams.items()], lambda x: x[category], decimal_places=data['decimals'])
-        headings_fields.append(generate_mrkdwn_text(f':{data['emoji']}: *{category}s*'))
-        leaderboards_fields.append(generate_mrkdwn_text('\n'.join(medalists)))
-    
+                                         for team, stats in teams.items()], lambda x: x[category], decimal_places=data['decimals'])
+        headings_fields.append(f':{data['emoji']}: *{category}s*')
+        leaderboards_fields.append('\n'.join(medalists))
+
     leaderboards_section = utils.get_section_header('Leaderboards')
-    while len(headings_fields) > 0:
-        headings_sections = headings_fields[0:2]
-        headings_fields = headings_fields[2:]
-
-        leaderboards_sections = leaderboards_fields[0:2]
-        leaderboards_fields = leaderboards_fields[2:]
-
-        leaderboards_section.extend(generate_fields_sections([headings_sections, leaderboards_sections]))
+    leaderboards_section.extend(generate_fields(headings_fields, leaderboards_fields))
 
     return leaderboards_section
 
@@ -66,6 +67,7 @@ def process(team_abbrev, lineup):
         counted_scores = sorted_scores[-positions[position]['top']:]
         team[position] += sum(counted_scores)
 
+
 def get_trophies(league):
     box_scores = league.box_scores(league.current_week - 1)
 
@@ -76,31 +78,111 @@ def get_trophies(league):
     scores = []
     results = []
     performances = []
-    optimal_scores = {}
-    
+    players = []
+    benchwarmers = []
+
     for box_score in box_scores:
-        away_team = box_score.away_team
+        away_team = box_score.away_team.team_abbrev
         away_score = box_score.away_score
-        home_team = box_score.home_team
+        home_team = box_score.home_team.team_abbrev
         home_score = box_score.home_score
         scores.extend([(away_team, away_score), (home_team, home_score)])
 
-        results.append((away_team, home_team, away_score, home_score))
-        
+        if (away_score > home_score):
+            results.append((away_team, home_team, away_score, home_score))
+        else:
+            results.append((home_team, away_team, home_score, away_score))
+
         away_performance = away_score - box_score.away_projected
         home_performance = home_score - box_score.home_projected
         performances.extend([(away_team, away_performance), (home_team, home_performance)])
-    
+
+        players.extend([(away_team, p, away_score - home_score) for p in get_active_players(box_score.away_lineup)])
+        players.extend([(home_team, p, home_score - away_score) for p in get_active_players(box_score.home_lineup)])
+
+        benchwarmers.extend([(away_team, combo) for combo in get_benchwarmers(box_score.away_lineup)])
+        benchwarmers.extend([(home_team, combo) for combo in get_benchwarmers(box_score.home_lineup)])
+
+    trophies_values = []
+
+    # High and Low Scores
     sorted_scores = sorted(scores, key=lambda x: x[1], reverse=True)
+    high_score, low_score = sorted_scores[0], sorted_scores[-1]
+    trophies_values.extend([f'*{utils.format_number(value, decimal_places=2)}* - {utils.get_team(team)
+                                                                                  }' for team, value in [high_score, low_score]])
+
+    # Blowout and Squeaker
     sorted_results = sorted(results, key=lambda x: abs(x[2] - x[3]), reverse=True)
+    blowout, squeaker = sorted_results[0], sorted_results[-1]
+    trophies_values.extend([f'*{utils.format_number(win_score - lose_score, decimal_places=2)
+                                }* - {utils.get_team(winner)} def. {utils.get_team(loser)}' for (winner, loser, win_score, lose_score) in [blowout, squeaker]])
+
+    # Overachiever and Underachiever
     sorted_performances = sorted(performances, key=lambda x: x[1], reverse=True)
-    accuracy = functionality.optimal_team_scores(league, full_report=True)
-    print(accuracy)
+    overachiever, underachiever = sorted_performances[0], sorted_performances[-1]
+    trophies_values.extend([f'*{utils.format_number(abs(value), decimal_places=2)}* - {utils.get_team(team)
+                                                                                  }' for team, value in [overachiever, underachiever]])
+
+    # Best and Worst Managers
+    accuracy = list(functionality.optimal_team_scores(league, full_report=True).items())
+    best, worst = accuracy[0], accuracy[-1]
+    trophies_values.extend([f'*{utils.format_number(data[3], decimal_places=1)
+                                }%* - {utils.get_team(team.team_abbrev)}' for team, data in [best, worst]])
+
+    # Studs and Duds
+    player_achievement = sorted([p for p in players], key=lambda x: x[1].points - x[1].projected_points, reverse=True)
+    stud, dud = player_achievement[0], player_achievement[-1]
+    trophies_values.extend([f'*{utils.format_number(player.points - player.projected_points,
+                           decimal_places=2)}* - {player.name} {utils.get_team(team)}' for team, player, _ in [stud, dud]])
+
+    # These take into account margin, but omitting it for now
+    # studs = search_players(player_achievement, condition=lambda x: x[2] > 0 and x[1].points -
+    #                        x[1].projected_points > x[2], sort=lambda x: x[1].points - x[1].projected_points - x[2], reverse=True)
+    # duds = search_players(player_achievement, condition=lambda x: x[2] < 0 and x[1].points -
+    #                       x[1].projected_points < x[2], sort=lambda x: x[1].points - x[1].projected_points - x[2])
+
+    sorted_benchwarmers = sorted(benchwarmers, key=lambda x: x[1][1].points - x[1][0].points, reverse=True)
+    benchwarmer_team, (starter, benchwarmer) = sorted_benchwarmers[0]
+    trophies_values.append(f'*{utils.format_number(benchwarmer.points - starter.points, decimal_places=2)}* - {utils.get_team(benchwarmer_team)}')
+
+    trophies_headers = [f':{emoji}: *{name}*' for (name, emoji) in trophies]
+    trophies_section.extend(generate_fields(trophies_headers, trophies_values))
 
     return trophies_section
 
+
+def get_benchwarmers(lineup):
+    benchwarmers = []
+    active_players = get_active_players(lineup)
+    for player in get_bench_players(lineup):
+        possible_positions = set([p.position for p in active_players if p.lineupSlot in player.eligibleSlots])
+        possible_replacements = [p for p in active_players if p.position in possible_positions]
+        benchwarmers.extend([(starter, player) for starter in possible_replacements])
+    return benchwarmers
+
+
+def get_active_players(lineup):
+    return search_players(lineup, condition=lambda x: x.lineupSlot not in ['BE', 'IR'])
+
+
+def get_flex_players(lineup):
+    return search_players(lineup, condition=lambda x: x.lineupSlot in ['OP', 'RB/WR/TE'])
+
+
+def get_bench_players(lineup):
+    return search_players(lineup, condition=lambda x: x.lineupSlot == 'BE')
+
+
+def search_players(players, condition=None, sort=None, reverse=False):
+    filtered_players = [p for p in players if condition(p)]
+    if not sort:
+        return filtered_players
+    return sorted(filtered_players, key=sort, reverse=reverse)
+
+
 def generate_mrkdwn_text(text):
     return {'type': 'mrkdwn', 'text': text}
+
 
 def generate_fields_sections(sections):
     fields_sections = []
@@ -110,3 +192,21 @@ def generate_fields_sections(sections):
             'fields': section
         })
     return fields_sections
+
+
+def generate_fields(headers, values):
+    fields = []
+
+    headers_fields = [generate_mrkdwn_text(h) for h in headers]
+    values_fields = [generate_mrkdwn_text(v) for v in values]
+
+    while len(headers_fields) > 0:
+        headers_sections = headers_fields[0:2]
+        headers_fields = headers_fields[2:]
+
+        values_sections = values_fields[0:2]
+        values_fields = values_fields[2:]
+
+        fields.extend(generate_fields_sections([headers_sections, values_sections]))
+
+    return fields
