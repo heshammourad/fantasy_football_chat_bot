@@ -1,6 +1,6 @@
 import utils
 
-history = [
+prev_history = [
     (2019, '1', 'RR', 'FIG', 127.4, 78.92),
     (2019, '1', 'TIDE', 'YEAH', 165.54, 130.32),
     (2019, '2', 'HM', 'RR', 142.02, 94.26),
@@ -268,13 +268,31 @@ def get(league):
     schedule = [utils.get_header(f'Week {week} Schedule')]
     schedule.append({'type': 'divider'})
 
+    history = list(prev_history)
+
+    for wk in range(1, week):
+        week_matchups = league.box_scores(week=wk)
+        for matchup in week_matchups:
+            away_abbrev = matchup.away_team.team_abbrev
+            away_score = matchup.away_score
+            home_abbrev = matchup.home_team.team_abbrev
+            home_score = matchup.home_score
+
+            if away_score > home_score:
+                winner, loser = away_abbrev, home_abbrev
+                win_score, lose_score = away_score, home_score
+            else:
+                winner, loser = home_abbrev, away_abbrev
+                win_score, lose_score = home_score, away_score
+            history.append((2024, str(wk), winner, loser, win_score, lose_score))
+
     for matchup in matchups:
         away_team = matchup.away_team
         home_team = matchup.home_team
         away_abbrev = away_team.team_abbrev
         home_abbrev = home_team.team_abbrev
-        schedule.append(utils.get_mrkdwn_from_arr([f'{utils.get_team(away_abbrev)} {
-                        get_record(away_team)} v {utils.get_team(home_abbrev)} {get_record(home_team)}']))
+        schedule.append(utils.get_mrkdwn_from_arr(f'{utils.get_team(away_abbrev)} {
+                        get_record(away_team)} v {utils.get_team(home_abbrev)} {get_record(home_team)}'))
 
         matchup_teams = [away_abbrev, home_abbrev]
         h2h_wins = [0, 0]

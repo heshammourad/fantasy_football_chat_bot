@@ -44,7 +44,8 @@ def get_standings_section(standings, start, end):
     texts = []
     for i in range(start, end):
         team = standings[i]
-        texts.append(f' {i + 1}. {utils.get_team(team.team_abbrev)} ({team.wins}-{team.losses})')
+        texts.append(f'{utils.format_number(i + 1, target_length=2)
+                        }. {utils.get_team(team.team_abbrev)} ({team.wins}-{team.losses})')
     return utils.get_mrkdwn_from_arr(texts)
 
 
@@ -64,7 +65,7 @@ def get_scoring_leaders(standings):
                 'text': '*$10 Regular Season Scoring Leader*'
         }}]
     most_points = utils.get_medalists(standings, lambda x: x.points_for, 2)
-    scoring_leaders.append(utils.get_mrkdwn_from_arr(most_points))
+    scoring_leaders.append(utils.get_context_from_arr(most_points))
     return scoring_leaders
 
 
@@ -105,11 +106,12 @@ def get_survivor(standings, current_week):
         surviving_teams.append(team_abbrev)
 
     survivor_emoji = 'crown' if len(surviving_teams) == 1 else 'muscle'
-    survivor_sections.append(utils.get_mrkdwn_from_arr(
-        map(lambda x: f':{survivor_emoji}: - {utils.get_team(x)}', surviving_teams)))
+    survivor_sections.append(utils.get_context_from_arr(
+        [f':{survivor_emoji}: - {utils.get_team(team)}' for team in surviving_teams]))
 
-    survivor_sections.append(utils.get_mrkdwn_from_arr(
-        map(lambda x: f':skull: - {utils.get_team(x['team'])} (Week {x['week']}: {utils.format_number(x['score'], decimal_places=2)})', reversed(eliminated_teams))))
+    eliminated_teams.reverse()
+    survivor_sections.append(utils.get_context_from_arr([f':skull: - {utils.get_team(team['team'])} (Week {team['week']}: {
+                             utils.format_number(team['score'], decimal_places=2)})' for team in eliminated_teams]))
 
     return survivor_sections
 
@@ -125,16 +127,13 @@ def get_best_week(standings):
             best_score = score
             best_team = team.team_abbrev
             best_week = week + 1
-    return [{
+    best_week_section = [{
         'type': 'section',
         'text': {
             'type': 'mrkdwn',
             'text': '*$4 Highest Scoring Week*'
         }
-    }, {
-        'type': 'section',
-        'text': {
-            'type': 'mrkdwn',
-            'text': f'*{utils.format_number(best_score, decimal_places=2)}* - {utils.get_team(best_team)} (Week {best_week})'
-        }
     }]
+    best_week_section.append(utils.get_context_from_arr(
+        [f'*{utils.format_number(best_score, decimal_places=2)}* - {utils.get_team(best_team)} (Week {best_week})']))
+    return best_week_section

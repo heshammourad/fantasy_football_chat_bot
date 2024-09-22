@@ -94,9 +94,18 @@ def get_mrkdwn_text(text):
 
 
 def get_mrkdwn_from_arr(arr):
+    text = '\n'.join(arr) if type(arr) is list else arr
     return {
         'type': 'section',
-        'text': get_mrkdwn_text('\n'.join(arr))
+        'text': get_mrkdwn_text(text)
+    }
+
+
+def get_context_from_arr(arr):
+    text = '\n'.join(arr) if type(arr) is list else arr
+    return {
+        "type": "context",
+        "elements": [get_mrkdwn_text(text)]
     }
 
 

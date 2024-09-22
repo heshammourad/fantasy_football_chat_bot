@@ -29,9 +29,12 @@ def main():
     elif weekday == 'Thu':
         blocks = schedule.get(league)
 
+
+    blocks = recap.get(league)
+        
     print(json.dumps(blocks, indent=2))
-    slack_bot = Slack(slack_webhook_url)
-    slack_bot.send_message(blocks)
+    # slack_bot = Slack(slack_webhook_url)
+    # slack_bot.send_message(blocks)
 
 if __name__ == '__main__':
     main()

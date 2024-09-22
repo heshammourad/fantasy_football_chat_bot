@@ -36,16 +36,12 @@ def get_leaderboards(league):
             process(box_score.away_team.team_abbrev, box_score.away_lineup)
             process(box_score.home_team.team_abbrev, box_score.home_lineup)
 
-    headings_fields = []
-    leaderboards_fields = []
+    leaderboards_section = utils.get_section_header('Leaderboards')
     for i, (category, data) in enumerate(positions.items()):
         medalists = utils.get_medalists([{'team_abbrev': team, **stats}
                                          for team, stats in teams.items()], lambda x: x[category], decimal_places=data['decimals'])
-        headings_fields.append(f':{data['emoji']}: *{category}s*')
-        leaderboards_fields.append('\n'.join(medalists))
-
-    leaderboards_section = utils.get_section_header('Leaderboards')
-    leaderboards_section.extend(generate_fields(headings_fields, leaderboards_fields))
+        leaderboards_section.append(utils.get_mrkdwn_from_arr(f':{data['emoji']}: *{category}s*'))
+        leaderboards_section.append(utils.get_context_from_arr(medalists))
 
     return leaderboards_section
 
@@ -163,7 +159,9 @@ def get_trophies(league):
                            starter.name} scored just {utils.format_number(starter.points, decimal_places=positions[starter.position]['decimals'])}')
 
     trophies_headers = [f':{emoji}: *{name}*' for (name, emoji) in trophies]
-    trophies_section.extend(generate_fields(trophies_headers, trophies_values))
+    for i, header in enumerate(trophies_headers):
+        trophies_section.append(utils.get_mrkdwn_from_arr(header))
+        trophies_section.append(utils.get_context_from_arr(trophies_values[i]))
 
     return trophies_section
 
@@ -182,10 +180,6 @@ def get_active_players(lineup):
     return search_players(lineup, condition=lambda x: x.lineupSlot not in ['BE', 'IR'])
 
 
-def get_flex_players(lineup):
-    return search_players(lineup, condition=lambda x: x.lineupSlot in ['OP', 'RB/WR/TE'])
-
-
 def get_bench_players(lineup):
     return search_players(lineup, condition=lambda x: x.lineupSlot == 'BE')
 
@@ -195,35 +189,3 @@ def search_players(players, condition=None, sort=None, reverse=False):
     if not sort:
         return filtered_players
     return sorted(filtered_players, key=sort, reverse=reverse)
-
-
-def generate_mrkdwn_text(text):
-    return {'type': 'mrkdwn', 'text': text}
-
-
-def generate_fields_sections(sections):
-    fields_sections = []
-    for section in sections:
-        fields_sections.append({
-            'type': 'section',
-            'fields': section
-        })
-    return fields_sections
-
-
-def generate_fields(headers, values):
-    fields = []
-
-    headers_fields = [generate_mrkdwn_text(h) for h in headers]
-    values_fields = [generate_mrkdwn_text(v) for v in values]
-
-    while len(headers_fields) > 0:
-        headers_sections = headers_fields[0:2]
-        headers_fields = headers_fields[2:]
-
-        values_sections = values_fields[0:2]
-        values_fields = values_fields[2:]
-
-        fields.extend(generate_fields_sections([headers_sections, values_sections]))
-
-    return fields
