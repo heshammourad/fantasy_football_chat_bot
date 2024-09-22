@@ -20,15 +20,8 @@ def get_results(box_scores):
 
     scoreboard = []
     for score in box_scores:
-        away_score = utils.format_number(score.away_score, target_length=3, decimal_places=2)
-        home_score = utils.format_number(score.home_score, target_length=3, decimal_places=2)
-        if score.away_score > score.home_score:
-            away_score = f'*{away_score}*'
-        else:
-            home_score = f'*{home_score}*'
-
-        scores = [(score.away_team.team_abbrev, away_score), (score.home_team.team_abbrev, home_score)]
-        scoreboard.append('\n'.join(map(lambda x: f'{x[1]}\t{utils.get_team(x[0])}', scores)))
+        scoreboard.append(utils.get_formatted_scoreboard(score.away_team.team_abbrev,
+                          score.away_score, score.home_team.team_abbrev, score.home_score, True))
 
     results.extend(utils.get_fields(scoreboard))
     return results

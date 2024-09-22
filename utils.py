@@ -109,6 +109,18 @@ def get_context_from_arr(arr):
     }
 
 
+def get_formatted_scoreboard(away_team, away_score, home_team, home_score, is_final=False):
+    away_score_text = format_number(away_score, target_length=3, decimal_places=2)
+    home_score_text = format_number(home_score, target_length=3, decimal_places=2)
+    if is_final:
+        if away_score > home_score:
+            away_score_text = f'*{away_score_text}*'
+        else:
+            home_score_text = f'*{home_score_text}*'
+    scores = [(away_team, away_score_text), (home_team, home_score_text)]
+    return '\n'.join([f'{x[1]}\t{get_team(x[0])}' for x in scores])
+
+
 def get_number_prefix(num):
     return str(num).split('.')[0]
 
@@ -149,3 +161,7 @@ def get_medalists(teams, field_getter, decimal_places=0):
         medalists.append(f':{medal}_place_medal: *{format_number(value, leading_value_length,
                          decimal_places=decimal_places)}* - {get_team(team_abbrev)}')
     return medalists
+
+
+def is_starter(player):
+    return player.lineupSlot not in ['BE', 'IR']

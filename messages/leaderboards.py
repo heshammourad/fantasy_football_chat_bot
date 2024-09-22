@@ -50,7 +50,7 @@ def process(team_abbrev, lineup):
     team = teams[team_abbrev]
     roster_breakdown = {pos: [] for pos in positions.keys() if positions[pos]['top'] > 0}
     for player in lineup:
-        if player.lineupSlot in ['BE', 'IR']:
+        if utils.is_starter(player):
             continue
         stats = list(player.stats.values())[0]
         team['TD'] += sum(value for key, value in stats['breakdown'].items() if key in td_keys)
@@ -177,7 +177,7 @@ def get_benchwarmers(lineup):
 
 
 def get_active_players(lineup):
-    return search_players(lineup, condition=lambda x: x.lineupSlot not in ['BE', 'IR'])
+    return search_players(lineup, condition=lambda x: utils.is_starter(x))
 
 
 def get_bench_players(lineup):
