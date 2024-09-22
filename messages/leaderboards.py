@@ -1,5 +1,4 @@
 import gamedaybot.espn.functionality as functionality
-import json
 import utils
 
 positions = {

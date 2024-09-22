@@ -103,8 +103,10 @@ def get_survivor(standings, current_week):
             continue
 
         surviving_teams.append(team_abbrev)
+
+    survivor_emoji = 'crown' if len(surviving_teams) == 1 else 'muscle'
     survivor_sections.append(utils.get_mrkdwn_from_arr(
-        map(lambda x: f':muscle: - {utils.get_team(x)}', surviving_teams)))
+        map(lambda x: f':{survivor_emoji}: - {utils.get_team(x)}', surviving_teams)))
 
     survivor_sections.append(utils.get_mrkdwn_from_arr(
         map(lambda x: f':skull: - {utils.get_team(x['team'])} (Week {x['week']}: {utils.format_number(x['score'], decimal_places=2)})', reversed(eliminated_teams))))

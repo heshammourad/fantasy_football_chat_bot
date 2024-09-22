@@ -7,6 +7,7 @@ import os
 import pytz
 import messages.leaderboards as leaderboards
 import messages.recap as recap
+import messages.schedule as schedule
 
 def main():
     espn_s2 = os.getenv('ESPN_S2')
@@ -25,6 +26,8 @@ def main():
             blocks = recap.get(league)
         else:
             blocks = leaderboards.get(league)
+    elif weekday == 'Thu':
+        blocks = schedule.get(league)
 
     print(json.dumps(blocks, indent=2))
     slack_bot = Slack(slack_webhook_url)
