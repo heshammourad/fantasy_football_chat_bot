@@ -162,7 +162,7 @@ def get_trophies(league):
     dud_text = f'*{dud[1].name}* - {utils.get_team(dud[0])} underperformed projection by *{
         utils.format_number(dud[1].projected_points - dud[1].points, decimal_places=2)}*'
     if duds:
-        dud_text += f' in a ${utils.format_number(dud[2], decimal_places=2)} loss'
+        dud_text += f' in a {utils.format_number(abs(dud[2]), decimal_places=2)} loss'
     trophies_values.append(dud_text)
 
     # Benchwarmer
