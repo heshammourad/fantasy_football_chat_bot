@@ -15,6 +15,7 @@ teams = {team: {category: 0 for category in list(positions.keys()) + ['TD']} for
 trophies = [
     ('High Score', 'fire'), ('Low Score', 'ice_cube'),
     ('Blowout', 'sunglasses'), ('Squeaker', 'sweat_smile'),
+    ('Lucky', 'four_leaf_clover'), ('Unlucky', 'rage'),
     ('Overachiever', 'chart_with_upwards_trend'), ('Underachiever', 'chart_with_downwards_trend'),
     ('Best Manager', 'white_check_mark'), ('Worst Manager', 'x'),
     ('Stud', '+1'), ('Dud', '-1'),
@@ -50,7 +51,7 @@ def process(team_abbrev, lineup):
     team = teams[team_abbrev]
     roster_breakdown = {pos: [] for pos in positions.keys() if positions[pos]['top'] > 0}
     for player in lineup:
-        if utils.is_starter(player):
+        if not utils.is_starter(player):
             continue
         stats = list(player.stats.values())[0]
         team['TD'] += sum(value for key, value in stats['breakdown'].items() if key in td_keys)
@@ -115,6 +116,18 @@ def get_trophies(league):
         blowout[2] - blowout[3], decimal_places=2)}* points ({utils.format_number(blowout[2], decimal_places=2)}-{utils.format_number(blowout[3], decimal_places=2)})')
     trophies_values.append(f'{utils.get_team(squeaker[1])} lost to {utils.get_team(squeaker[0])} by *{utils.format_number(
         squeaker[2] - squeaker[3], decimal_places=2)}* points ({utils.format_number(squeaker[2], decimal_places=2)}-{utils.format_number(squeaker[3], decimal_places=2)})')
+
+    # Lucky and Unlucky
+    points = sorted([score for sublist in [result[2:4] for result in results] for score in sublist])
+    sorted_lucky = sorted(results, key=lambda x: x[2])
+    lucky_rank = utils.get_rank_ordinal(points, sorted_lucky[0][2])
+    trophies_values.append(f'{utils.get_team(sorted_lucky[0][0])} finished with the {
+                           lucky_rank} highest score, but still came away with the win')
+
+    sorted_unlucky = sorted(results, key=lambda x: x[3], reverse=True)
+    unlucky_rank = utils.get_rank_ordinal(points, sorted_unlucky[0][3])
+    trophies_values.append(f'{utils.get_team(sorted_unlucky[0][1])} had the {
+                           unlucky_rank} highest score, but still ended up taking the L')
 
     # Overachiever and Underachiever
     sorted_performances = sorted(performances, key=lambda x: x[1], reverse=True)

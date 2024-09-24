@@ -1,3 +1,6 @@
+from num2words import num2words
+
+
 teams = {
     'CL': {
         'name': 'wut r sports',
@@ -134,6 +137,10 @@ def format_number(num, target_length=1, decimal_places=0):
     padding_length = target_length - get_number_length(num)
     padding = ' ' * padding_length
     return padding + formatted_number
+
+
+def get_rank_ordinal(arr, value):
+    return num2words(sum(1 for n in arr if n < value) + 1, to='ordinal_num')
 
 
 medals = ['first', 'second', 'third']
