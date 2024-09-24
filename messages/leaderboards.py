@@ -125,7 +125,7 @@ def get_trophies(league):
                            lucky_rank} highest score, but still came away with the win')
 
     sorted_unlucky = sorted(results, key=lambda x: x[3], reverse=True)
-    unlucky_rank = utils.get_rank_ordinal(points, sorted_unlucky[0][3])
+    unlucky_rank = utils.get_rank_ordinal(points, sorted_unlucky[0][3], reverse=True)
     trophies_values.append(f'{utils.get_team(sorted_unlucky[0][1])} had the {
                            unlucky_rank} highest score, but still ended up taking the L')
 
