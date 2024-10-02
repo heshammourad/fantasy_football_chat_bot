@@ -29,6 +29,7 @@ jobs:
           job: 'fantasy-football-chat-bot'
           source: .
           project_id: ${{ secrets.PROJECT_ID }}
+          region: us-east1
 
       # If required, use the Cloud Run URL output in later steps
       - name: 'Show output'
