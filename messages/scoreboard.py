@@ -12,8 +12,8 @@ def get(league):
         home_score = matchup.home_score
         scores = [utils.format_number(score, target_length=3, decimal_places=2)
                   for score in [away_score, home_score]]
-        to_play = [sum(1 for player in lineup if utils.is_starter(player) and player.game_date > now)
-                   for lineup in [matchup.away_lineup, matchup.home_lineup]]
+        to_play = [sum(1 for player in lineup if utils.is_starter(player) and hasattr(player, 'game_date')
+                       and player.game_date > now) for lineup in [matchup.away_lineup, matchup.home_lineup]]
 
         scoreboard.append({'type': 'divider'})
         scoreboard.append(utils.get_context_from_arr(get_breakdown(to_play[0], matchup.away_projected)))
