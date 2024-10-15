@@ -120,12 +120,12 @@ def get_trophies(league):
     # Lucky and Unlucky
     points = sorted([score for sublist in [result[2:4] for result in results] for score in sublist])
     sorted_lucky = sorted(results, key=lambda x: x[2])
-    lucky_rank = utils.get_rank_ordinal(points, sorted_lucky[0][2])
+    lucky_rank = utils.get_rank_ordinal(points, sorted_lucky[0][2], reverse=True)
     trophies_values.append(f'{utils.get_team(sorted_lucky[0][0])} finished with the {
                            lucky_rank} highest score, but still came away with the win')
 
     sorted_unlucky = sorted(results, key=lambda x: x[3], reverse=True)
-    unlucky_rank = utils.get_rank_ordinal(points, sorted_unlucky[0][3], reverse=True)
+    unlucky_rank = utils.get_rank_ordinal(points, sorted_unlucky[0][3])
     trophies_values.append(f'{utils.get_team(sorted_unlucky[0][1])} had the {
                            unlucky_rank} highest score, but still ended up taking the L')
 
