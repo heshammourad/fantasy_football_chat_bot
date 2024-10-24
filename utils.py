@@ -35,7 +35,7 @@ teams = {
         'emoji': 'ff-vijay'
     },
     'WFH': {
-        'name': 'Work From Home Consultants',
+        'name': 'Stay At Home Consultants',
         'emoji': 'ff-sparsh'
     },
     'YEAH': {
@@ -140,7 +140,7 @@ def format_number(num, target_length=1, decimal_places=0):
 
 
 def get_rank_ordinal(arr, value, reverse=True):
-    condition = lambda n, value: n > value if reverse else n < value
+    def condition(n, value): return n > value if reverse else n < value
     return num2words(sum(1 for n in arr if condition(n, value)) + 1, to='ordinal_num')
 
 

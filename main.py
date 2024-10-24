@@ -31,7 +31,7 @@ def main():
         blocks = schedule.get(league)
     else:
         blocks = scoreboard.get(league)
-        
+
     slack_bot = Slack(slack_webhook_url)
     slack_bot.send_message(blocks)
 
