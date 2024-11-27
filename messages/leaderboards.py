@@ -54,7 +54,8 @@ def process(team_abbrev, lineup):
         if not utils.is_starter(player):
             continue
         stats = list(player.stats.values())[0]
-        team['TD'] += sum(value for key, value in stats['breakdown'].items() if key in td_keys)
+        if 'breakdown' in stats:
+            team['TD'] += sum(value for key, value in stats['breakdown'].items() if key in td_keys)
 
         roster_breakdown[player.position].append(player.points)
 
@@ -139,9 +140,16 @@ def get_trophies(league):
 
     # Best and Worst Managers
     accuracy = list(functionality.optimal_team_scores(league, full_report=True).items())
-    best, worst = accuracy[0], accuracy[-1]
-    trophies_values.append(f'{utils.get_team(
-        best[0].team_abbrev)} scored *{utils.format_number(best[1][3], decimal_places=1)}%* of their optimal score')
+    worst = accuracy[-1]
+    best = []
+    last_pct = None
+    for value in accuracy:
+        pct = utils.format_number(value[1][3], decimal_places=1)
+        if last_pct is not None and last_pct != pct:
+            break
+        last_pct = pct
+        best.append(f'{utils.get_team(value[0].team_abbrev)} scored *{pct}%* of their optimal score')
+    trophies_values.append('\n'.join(best))
     trophies_values.append(f'{utils.get_team(worst[0].team_abbrev)} left {utils.format_number(
         worst[1][2], decimal_places=2)} points on the bench, scoring only *{utils.format_number(worst[1][3], decimal_places=1)}%* of their optimal score')
 
