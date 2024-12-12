@@ -288,6 +288,8 @@ def get(league):
 
     for matchup in matchups:
         away_team = matchup.away_team
+        if away_team == 0:
+            continue
         home_team = matchup.home_team
         away_abbrev = away_team.team_abbrev
         home_abbrev = home_team.team_abbrev
