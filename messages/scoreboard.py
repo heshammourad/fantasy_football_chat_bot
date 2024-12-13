@@ -8,6 +8,8 @@ def get(league):
 
     box_scores = league.box_scores()
     for matchup in box_scores:
+        if matchup.away_team == 0:
+            continue
         away_score = matchup.away_score
         home_score = matchup.home_score
         scores = [utils.format_number(score, target_length=3, decimal_places=2)
