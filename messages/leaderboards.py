@@ -34,7 +34,8 @@ def get_leaderboards(league):
     for i in range(1, league.current_week):
         box_scores = league.box_scores(i)
         for box_score in box_scores:
-            process(box_score.away_team.team_abbrev, box_score.away_lineup)
+            if box_score.away_team != 0:
+                process(box_score.away_team.team_abbrev, box_score.away_lineup)
             process(box_score.home_team.team_abbrev, box_score.home_lineup)
 
     leaderboards_section = utils.get_section_header('Leaderboards')
@@ -79,6 +80,8 @@ def get_trophies(league):
     benchwarmers = []
 
     for box_score in box_scores:
+        if box_score.away_team == 0:
+            continue
         away_team = box_score.away_team.team_abbrev
         away_score = box_score.away_score
         home_team = box_score.home_team.team_abbrev

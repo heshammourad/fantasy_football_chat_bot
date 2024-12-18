@@ -23,15 +23,18 @@ def main():
     weekday = now.strftime('%a')
     blocks = []
     if weekday == 'Tue':
-        if now.hour < 12:
+        # if now.hour < 12:
             blocks = recap.get(league)
-        else:
-            blocks = leaderboards.get(league)
+        # else:
+        #     blocks = leaderboards.get(league)
     elif weekday == 'Thu':
         blocks = schedule.get(league)
     else:
         blocks = scoreboard.get(league)
 
+    # blocks = leaderboards.get(league)
+
+    print(blocks)
     slack_bot = Slack(slack_webhook_url)
     slack_bot.send_message(blocks)
 

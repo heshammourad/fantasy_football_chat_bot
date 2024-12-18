@@ -20,6 +20,8 @@ def get_results(box_scores):
 
     scoreboard = []
     for score in box_scores:
+        if score.away_team == 0:
+            continue
         scoreboard.append(utils.get_formatted_scoreboard(score.away_team.team_abbrev,
                           score.away_score, score.home_team.team_abbrev, score.home_score, True))
 
