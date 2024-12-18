@@ -225,7 +225,7 @@ def scan_roster(lineup, team):
             players += [player]
 
         if i.slot_position == 'IR' and \
-            i.injuryStatus != 'INJURY_RESERVE' and i.injuryStatus != 'OUT':
+                i.injuryStatus != 'INJURY_RESERVE' and i.injuryStatus != 'OUT':
 
             count += 1
             player = i.position + ' ' + i.name + ' - Not IR eligible'
@@ -432,7 +432,6 @@ def get_power_rankings(league, week=None):
         max_score = max(float(score) for score, _ in rankings)
         return [(f"{99.99 * float(score) / max_score:.2f}", team) for score, team in rankings]
 
-
     normalized_current_rankings = normalize_rankings(current_rankings)
     normalized_previous_rankings = normalize_rankings(previous_rankings)
 
@@ -448,11 +447,13 @@ def get_power_rankings(league, week=None):
         # Check if the team was present in the normalized previous rankings
         if team_abbrev in previous_rankings_dict:
             previous_score = previous_rankings_dict[team_abbrev]
-            rank_change_percent = ((float(normalized_current_score) - float(previous_score)) / float(previous_score)) * 100
+            rank_change_percent = ((float(normalized_current_score) - float(previous_score)) /
+                                   float(previous_score)) * 100
             rank_change_emoji = p_rank_up_emoji if rank_change_percent > 0 else p_rank_down_emoji if rank_change_percent < 0 else p_rank_same_emoji
             rank_change_text = f"[{rank_change_emoji}{abs(rank_change_percent):4.1f}%]"
 
-        rankings_text.append(f"{normalized_current_score}{rank_change_text} ({current_team.playoff_pct:4.1f}) - {team_abbrev}")
+        rankings_text.append(f"{normalized_current_score}{rank_change_text} ({
+                             current_team.playoff_pct:4.1f}) - {team_abbrev}")
 
     return '\n'.join(rankings_text)
 
@@ -472,45 +473,7 @@ def get_starter_counts(league):
         A dictionary containing the number of players at each position within the starting lineup.
     """
 
-    # Get the box scores for last week
-    box_scores = league.box_scores(week=league.current_week - 1)
-    # Initialize a dictionary to store the home team's starters and their positions
-    h_starters = {}
-    # Initialize a variable to keep track of the number of home team starters
-    h_starter_count = 0
-    # Initialize a dictionary to store the away team's starters and their positions
-    a_starters = {}
-    # Initialize a variable to keep track of the number of away team starters
-    a_starter_count = 0
-    # Iterate through each game in the box scores
-    for i in box_scores:
-        # Iterate through each player in the home team's lineup
-        for player in i.home_lineup:
-            # Check if the player is a starter (not on the bench or injured)
-            if (player.slot_position != 'BE' and player.slot_position != 'IR'):
-                # Increment the number of home team starters
-                h_starter_count += 1
-                try:
-                    # Try to increment the count for this position in the h_starters dictionary
-                    h_starters[player.slot_position] = h_starters[player.slot_position] + 1
-                except KeyError:
-                    # If the position is not in the dictionary yet, add it and set the count to 1
-                    h_starters[player.slot_position] = 1
-        # in the rare case when someone has an empty slot we need to check the other team as well
-        for player in i.away_lineup:
-            if (player.slot_position != 'BE' and player.slot_position != 'IR'):
-                a_starter_count += 1
-                try:
-                    a_starters[player.slot_position] = a_starters[player.slot_position] + 1
-                except KeyError:
-                    a_starters[player.slot_position] = 1
-
-        # if statement for the ultra rare case of a matchup with both entire teams (or one with a bye) on the bench
-        if a_starter_count!=0 and h_starter_count != 0:
-            if a_starter_count > h_starter_count:
-                return a_starters
-            else:
-                return h_starters
+    return {pos: cnt for pos, cnt in league.settings.position_slot_counts.items() if pos not in ['BE', 'IR'] and cnt != 0}
 
 
 def best_flex(flexes, player_pool, num):
@@ -691,7 +654,8 @@ def optimal_team_scores(league, week=None, full_report=False, recap=False):
 
         if num_teams <= 1:
             best = next(iter(best_scores.items()))
-            best_mgr_str = ['🤖 Best Manager 🤖'] + ['%s scored %.2f%% of their optimal score!' % (best[0].team_name, best[1][3])]
+            best_mgr_str = ['🤖 Best Manager 🤖'] + \
+                ['%s scored %.2f%% of their optimal score!' % (best[0].team_name, best[1][3])]
         else:
             team_names = team_names[:-2]
             best_mgr_str = ['🤖 Best Managers 🤖'] + [f'{team_names} scored their optimal score!']
@@ -757,7 +721,8 @@ def get_achievers_trophy(league, week=None, recap=False):
         high_achiever_str += ['No team out performed their projection']
 
     if worst_performance < 0:
-        low_achiever_str += ['%s was %.2f points under their projection' % (under_achiever.team_name, abs(worst_performance))]
+        low_achiever_str += ['%s was %.2f points under their projection' %
+                             (under_achiever.team_name, abs(worst_performance))]
     else:
         low_achiever_str += ['No team was worse than their projection']
 
@@ -812,8 +777,10 @@ def get_lucky_trophy(league, week=None, recap=False):
     if recap:
         return lucky_team.team_abbrev, unlucky_team.team_abbrev, weekly_scores
 
-    lucky_str = ['🍀 Lucky 🍀']+['%s was %s against the league, but still got the win' % (lucky_team.team_name, lucky_record)]
-    unlucky_str = ['😡 Unlucky 😡']+['%s was %s against the league, but still took an L' % (unlucky_team.team_name, unlucky_record)]
+    lucky_str = ['🍀 Lucky 🍀']+['%s was %s against the league, but still got the win' %
+                               (lucky_team.team_name, lucky_record)]
+    unlucky_str = ['😡 Unlucky 😡']+['%s was %s against the league, but still took an L' %
+                                   (unlucky_team.team_name, unlucky_record)]
     return (lucky_str + unlucky_str)
 
 
@@ -884,7 +851,8 @@ def get_trophies(league, week=None, recap=False):
     low_score_str = ['💩 Low score 💩']+['%s with %.2f points' % (low_team.team_name, low_score)]
     close_score_str = ['😅 Close win 😅']+['%s barely beat %s by %.2f points' %
                                          (close_winner.team_name, close_loser.team_name, closest_score)]
-    blowout_str = ['😱 Blow out 😱']+['%s blew out %s by %.2f points' % (ownerer.team_name, blown_out.team_name, biggest_blowout)]
+    blowout_str = ['😱 Blow out 😱']+['%s blew out %s by %.2f points' %
+                                    (ownerer.team_name, blown_out.team_name, biggest_blowout)]
 
     text = ['Trophies of the week:'] + high_score_str + low_score_str + blowout_str + close_score_str + \
         get_lucky_trophy(league, week) + get_achievers_trophy(league, week) + optimal_team_scores(league, week)
