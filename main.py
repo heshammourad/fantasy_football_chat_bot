@@ -23,10 +23,10 @@ def main():
     weekday = now.strftime('%a')
     blocks = []
     if weekday == 'Tue':
-        # if now.hour < 12:
+        if now.hour < 12:
             blocks = recap.get(league)
-        # else:
-        #     blocks = leaderboards.get(league)
+        else:
+            blocks = leaderboards.get(league)
     elif weekday == 'Thu':
         blocks = schedule.get(league)
     else:
