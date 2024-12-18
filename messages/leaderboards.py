@@ -69,8 +69,6 @@ def process(team_abbrev, lineup):
 def get_trophies(league):
     box_scores = league.box_scores(league.current_week - 1)
 
-    functionality.optimal_team_scores(league, full_report=True)
-
     trophies_section = utils.get_section_header('Trophies')
 
     scores = []
