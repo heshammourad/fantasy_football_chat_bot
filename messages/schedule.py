@@ -273,6 +273,8 @@ def get(league):
     for wk in range(1, week):
         week_matchups = league.box_scores(week=wk)
         for matchup in week_matchups:
+            if matchup.away_team == 0:
+                continue
             away_abbrev = matchup.away_team.team_abbrev
             away_score = matchup.away_score
             home_abbrev = matchup.home_team.team_abbrev
