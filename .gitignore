@@ -134,6 +134,7 @@ dmypy.json
 .vscode/*
 
 gamedaybot/ids.txt
-*.sh
 *.ipynb
 .DS_STORE
+
+google-cloud-sdk/
