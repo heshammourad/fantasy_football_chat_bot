@@ -1,3 +1,4 @@
+import os
 import utils
 
 prev_history = [
@@ -258,140 +259,176 @@ prev_history = [
     (2023, 'F', 'WFH', 'HM', 176.84, 147.7),
     (2023, '17', 'LNU', 'YEAH', 144.6, 116.56),
     (2023, '17', 'GOGA', 'FIG', 102.38, 86.58),
-    (2023, '17', 'TIDE', 'RR', 116.28, 110.92)
+    (2023, '17', 'TIDE', 'RR', 116.28, 110.92),
+    (2024, '1', 'HM', 'WFH', 159.1, 151.9),
+    (2024, '1', 'LNU', 'FIG', 162.88, 140.94),
+    (2024, '1', 'CL', 'TIDE', 158.56, 108.2),
+    (2024, '1', 'RR', 'GOGA', 127.24, 84.56),
+    (2024, '1', 'YEAH', 'KTT', 139.9, 72.4),
+    (2024, '2', 'GOGA', 'CL', 169.14, 123.78),
+    (2024, '2', 'KTT', 'RR', 186.68, 115.94),
+    (2024, '2', 'HM', 'LNU', 135.94, 113.62),
+    (2024, '2', 'TIDE', 'FIG', 120.78, 107.74),
+    (2024, '2', 'WFH', 'YEAH', 132.46, 87.28),
+    (2024, '3', 'FIG', 'GOGA', 158.7, 157.3),
+    (2024, '3', 'CL', 'RR', 155.2, 133.64),
+    (2024, '3', 'KTT', 'WFH', 153.44, 109.12),
+    (2024, '3', 'YEAH', 'LNU', 166.2, 91.44),
+    (2024, '3', 'HM', 'TIDE', 90.26, 86.24),
+    (2024, '4', 'CL', 'KTT', 150.6, 136.04),
+    (2024, '4', 'FIG', 'RR', 144.78, 132.5),
+    (2024, '4', 'GOGA', 'HM', 123.52, 120.48),
+    (2024, '4', 'YEAH', 'TIDE', 159.38, 102.46),
+    (2024, '4', 'WFH', 'LNU', 155.3, 95.88),
+    (2024, '5', 'CL', 'FIG', 195.4, 139.76),
+    (2024, '5', 'HM', 'RR', 190.22, 128.3),
+    (2024, '5', 'YEAH', 'GOGA', 148.24, 113.96),
+    (2024, '5', 'LNU', 'KTT', 151.4, 109.64),
+    (2024, '5', 'WFH', 'TIDE', 133.4, 93.36),
+    (2024, '6', 'YEAH', 'RR', 141.1, 133.44),
+    (2024, '6', 'WFH', 'GOGA', 139.22, 131.52),
+    (2024, '6', 'LNU', 'TIDE', 149.82, 118.38),
+    (2024, '6', 'HM', 'CL', 172.46, 114.8),
+    (2024, '6', 'FIG', 'KTT', 134.42, 95.32),
+    (2024, '7', 'WFH', 'RR', 143.66, 142.88),
+    (2024, '7', 'LNU', 'GOGA', 166.92, 117.4),
+    (2024, '7', 'HM', 'FIG', 152.4, 112.06),
+    (2024, '7', 'CL', 'YEAH', 116.34, 107.46),
+    (2024, '7', 'TIDE', 'KTT', 100.02, 95.94),
+    (2024, '8', 'LNU', 'RR', 172.56, 160.92),
+    (2024, '8', 'CL', 'WFH', 169.2, 145.62),
+    (2024, '8', 'YEAH', 'FIG', 162.42, 133.52),
+    (2024, '8', 'HM', 'KTT', 129.2, 129.1),
+    (2024, '8', 'GOGA', 'TIDE', 125.12, 118.08),
+    (2024, '9', 'FIG', 'WFH', 146.68, 134.66),
+    (2024, '9', 'GOGA', 'KTT', 149.5, 133.92),
+    (2024, '9', 'TIDE', 'RR', 148.18, 126.46),
+    (2024, '9', 'YEAH', 'HM', 129.92, 120.58),
+    (2024, '9', 'CL', 'LNU', 188.4, 103.82),
+    (2024, '10', 'WFH', 'RR', 152.02, 132.92),
+    (2024, '10', 'KTT', 'FIG', 130.06, 112.56),
+    (2024, '10', 'LNU', 'GOGA', 127.36, 111.62),
+    (2024, '10', 'YEAH', 'TIDE', 162.88, 92.84),
+    (2024, '10', 'HM', 'CL', 132.4, 90.04),
+    (2024, '11', 'YEAH', 'CL', 193.56, 144.48),
+    (2024, '11', 'HM', 'WFH', 152.86, 131.44),
+    (2024, '11', 'TIDE', 'FIG', 127.64, 126.02),
+    (2024, '11', 'KTT', 'GOGA', 147.7, 124.74),
+    (2024, '11', 'LNU', 'RR', 172.46, 103.04),
+    (2024, '12', 'CL', 'FIG', 155.68, 145.68),
+    (2024, '12', 'LNU', 'HM', 153.94, 115.24),
+    (2024, '12', 'TIDE', 'KTT', 112.86, 108.3),
+    (2024, '12', 'RR', 'GOGA', 106.28, 99.1),
+    (2024, '12', 'YEAH', 'WFH', 154.72, 96.16),
+    (2024, '13', 'TIDE', 'RR', 163.22, 140.18),
+    (2024, '13', 'LNU', 'WFH', 159.18, 127.62),
+    (2024, '13', 'FIG', 'YEAH', 140.1, 123.64),
+    (2024, '13', 'CL', 'KTT', 133.36, 119.66),
+    (2024, '13', 'HM', 'GOGA', 165.22, 99.96),
+    (2024, '14', 'CL', 'TIDE', 170.54, 148),
+    (2024, '14', 'LNU', 'FIG', 177.5, 145.78),
+    (2024, '14', 'YEAH', 'KTT', 153.52, 138.16),
+    (2024, '14', 'RR', 'HM', 130.26, 124.64),
+    (2024, '14', 'WFH', 'GOGA', 125.08, 94.36),
+    (2024, '15', 'KTT', 'TIDE', 155.32, 129.42),
+    (2024, '15', 'RR', 'GOGA', 143.96, 100.24),
+    (2024, '16', 'RR', 'KTT', 150.24, 128.98),
+    (2024, '16', 'FIG', 'WFH', 163.06, 117.32),
+    (2024, '16', 'TIDE', 'GOGA', 130.24, 109.58),
+    (2024, '17', 'HM', 'LNU', 171.34, 134.02),
+    (2024, '17', 'GOGA', 'KTT', 153.18, 143.16),
+    (2024, '17', 'TIDE', 'RR', 141.2, 128.38),
+    (2024, '17', 'WFH', 'FIG', 132.6, 107.68),
+    (2024, 'F', 'YEAH', 'CL', 165.66, 149.26),
+    (2024, 'QF', 'LNU', 'FIG', 168.98, 148.02),
+    (2024, 'QF', 'HM', 'WFH', 208.86, 104.16),
+    (2024, 'SF', 'CL', 'HM', 185.5, 175.02),
+    (2024, 'SF', 'YEAH', 'LNU', 178.52, 141.54),
 ]
 
 
 def get(league):
-    week = league.current_week
-    matchups = league.box_scores()
-    schedule = [utils.get_header(f'Week {week} Schedule')]
-    schedule.append({'type': 'divider'})
+  week = league.current_week
+  matchups = league.box_scores()
+  schedule = [utils.get_header(f'Week {week} Schedule')]
+  schedule.append({'type': 'divider'})
 
-    history = list(prev_history)
+  history = list(prev_history)
 
-    for wk in range(1, week):
-        week_matchups = league.box_scores(week=wk)
-        for matchup in week_matchups:
-            if matchup.away_team == 0:
-                continue
-            away_abbrev = matchup.away_team.team_abbrev
-            away_score = matchup.away_score
-            home_abbrev = matchup.home_team.team_abbrev
-            home_score = matchup.home_score
+  for wk in range(1, week):
+    week_matchups = league.box_scores(week=wk)
+    for matchup in week_matchups:
+      if matchup.away_team == 0:
+        continue
+      away_abbrev = matchup.away_team.team_abbrev
+      away_score = matchup.away_score
+      home_abbrev = matchup.home_team.team_abbrev
+      home_score = matchup.home_score
 
-            if away_score > home_score:
-                winner, loser = away_abbrev, home_abbrev
-                win_score, lose_score = away_score, home_score
-            else:
-                winner, loser = home_abbrev, away_abbrev
-                win_score, lose_score = home_score, away_score
-            history.append((2024, str(wk), winner, loser, win_score, lose_score))
+      if away_score > home_score:
+        winner, loser = away_abbrev, home_abbrev
+        win_score, lose_score = away_score, home_score
+      else:
+        winner, loser = home_abbrev, away_abbrev
+        win_score, lose_score = home_score, away_score
+      history.append((int(os.getenv('LEAGUE_YEAR')), str(wk), winner, loser,
+                      win_score, lose_score))
 
-    for matchup in matchups:
-        away_team = matchup.away_team
-        if away_team == 0:
-            continue
-        home_team = matchup.home_team
-        away_abbrev = away_team.team_abbrev
-        home_abbrev = home_team.team_abbrev
-        schedule.append(utils.get_mrkdwn_from_arr(f'{utils.get_team(away_abbrev)} {
-                        get_record(away_team)} v {utils.get_team(home_abbrev)} {get_record(home_team)}'))
+  for matchup in matchups:
+    away_team = matchup.away_team
+    if away_team == 0:
+      continue
+    home_team = matchup.home_team
+    away_abbrev = away_team.team_abbrev
+    home_abbrev = home_team.team_abbrev
+    schedule.append(
+        utils.get_mrkdwn_from_arr(
+            f'{utils.get_team(away_abbrev)} {get_record(away_team)} v {utils.get_team(home_abbrev)} {get_record(home_team)}'
+        ))
 
-        matchup_teams = [away_abbrev, home_abbrev]
-        h2h_wins = [0, 0]
-        streak = ['', 0]
-        last = ()
-        for history_match in history:
-            winner, loser = history_match[2:4]
-            if set([winner, loser]) != set(matchup_teams):
-                continue
-            if winner == away_abbrev:
-                h2h_wins[0] += 1
-            else:
-                h2h_wins[1] += 1
+    matchup_teams = [away_abbrev, home_abbrev]
+    h2h_wins = [0, 0]
+    streak = ['', 0]
+    last = ()
+    for history_match in history:
+      winner, loser = history_match[2:4]
+      if set([winner, loser]) != set(matchup_teams):
+        continue
+      if winner == away_abbrev:
+        h2h_wins[0] += 1
+      else:
+        h2h_wins[1] += 1
 
-            if streak[0] == winner:
-                streak[1] += 1
-            else:
-                streak = [winner, 1]
+      if streak[0] == winner:
+        streak[1] += 1
+      else:
+        streak = [winner, 1]
 
-            last = history_match
+      last = history_match
 
-        leading_team = None
-        if h2h_wins[0] > h2h_wins[1]:
-            leading_team = away_abbrev
-        elif h2h_wins[1] > h2h_wins[0]:
-            leading_team = home_abbrev
-        h2h_text = 'tied' if h2h_wins[0] == h2h_wins[1] else f'{utils.get_team_name(leading_team)} leads'
+    leading_team = None
+    if h2h_wins[0] > h2h_wins[1]:
+      leading_team = away_abbrev
+    elif h2h_wins[1] > h2h_wins[0]:
+      leading_team = home_abbrev
+    h2h_text = 'tied' if h2h_wins[0] == h2h_wins[
+        1] else f'{utils.get_team_name(leading_team)} leads'
 
-        year, wk, winner, loser, win_score, lose_score = last
-        week_text = 'Week ' if wk.isdigit() else ''
-        breakdown_text = [
-            f' ⚔️ *H2H*: {h2h_text} *{max(h2h_wins)}*-*{min(h2h_wins)}*',
-            f' 🌠 *Streak*: {utils.get_team_name(streak[0])} - *W{streak[1]}*',
-            f' ⏮️ *Last*: {year} {week_text}{wk} - {utils.get_team_name(winner)} *{utils.format_number(win_score, decimal_places=2)}*-*{
-                utils.format_number(lose_score, decimal_places=2)}* {utils.get_team_name(loser)}',
-            f' 🔮 *Projection*: {utils.get_team_name(away_abbrev)} *{utils.format_number(matchup.away_projected, decimal_places=2)}*-*{
-                utils.format_number(matchup.home_projected, decimal_places=2)}* {utils.get_team_name(home_abbrev)}'
-        ]
-        schedule.append({
-            'type': 'context',
-            'elements': [utils.get_mrkdwn_text('\n'.join(breakdown_text))]
-        })
+    year, wk, winner, loser, win_score, lose_score = last
+    week_text = 'Week ' if wk.isdigit() else ''
+    breakdown_text = [
+        f' ⚔️ *H2H*: {h2h_text} *{max(h2h_wins)}*-*{min(h2h_wins)}*',
+        f' 🌠 *Streak*: {utils.get_team_name(streak[0])} - *W{streak[1]}*',
+        f' ⏮️ *Last*: {year} {week_text}{wk} - {utils.get_team_name(winner)} *{utils.format_number(win_score, decimal_places=2)}*-*{utils.format_number(lose_score, decimal_places=2)}* {utils.get_team_name(loser)}',
+        f' 🔮 *Projection*: {utils.get_team_name(away_abbrev)} *{utils.format_number(matchup.away_projected, decimal_places=2)}*-*{utils.format_number(matchup.home_projected, decimal_places=2)}* {utils.get_team_name(home_abbrev)}'
+    ]
+    schedule.append({
+        'type': 'context',
+        'elements': [utils.get_mrkdwn_text('\n'.join(breakdown_text))]
+    })
 
-    return schedule
+  return schedule
 
 
 def get_record(team):
-    return f'({team.wins}-{team.losses})'
-
-# const TEAM_1 = TEAMS["HM"];
-# const TEAM_2 = TEAMS["TIDE"];
-
-# let team1Wins = 0;
-# let team2Wins = 0;
-# let streak;
-# let last;
-
-# for (const matchup of MATCHUPS) {
-#   const { winner, loser } = matchup;
-#   const matchupTeams = [TEAM_1, TEAM_2];
-#   if (!matchupTeams.includes(winner) || !matchupTeams.includes(loser)) {
-#     continue;
-#   }
-
-#   if (winner === TEAM_1) {
-#     team1Wins++;
-#   } else {
-#     team2Wins++;
-#   }
-
-#   if (!streak || streak[0] !== winner) {
-#     streak = [winner, 1];
-#   } else {
-#     streak[1]++;
-#   }
-
-#   last = matchup;
-# }
-
-# let summary = "*H2H*: ";
-# if (team1Wins > team2Wins) {
-#   summary += `_${TEAM_1}_ leads *${team1Wins}-${team2Wins}*`;
-# } else if (team2Wins > team1Wins) {
-#   summary += `_${TEAM_2}_ leads *${team2Wins}-${team1Wins}*`;
-# } else {
-#   summary += `tied *${team1Wins}-${team2Wins}*`;
-# }
-# console.log(summary);
-
-# console.log(`*Streak*: _${streak[0]}_ - *W${streak[1]}*`);
-
-# const { year, week, winner, loser, winnerScore, loserScore } = last;
-# const isWeek = !isNaN(parseInt(week));
-# console.log(
-#   `*Last*: ${year} ${
-#     isWeek ? "Week " : ""
-#   }${week} - _${winner}_ *${winnerScore}-${loserScore}* _${loser}_`
-# );
+  return f'({team.wins}-{team.losses})'
