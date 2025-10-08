@@ -162,9 +162,16 @@ def get_medalists(teams, field_getter, decimal_places=0):
       team_abbrev = team['team_abbrev']
 
     medalists.append(
-        f':{medal}_place_medal: *{format_number(value, leading_value_length, decimal_places=decimal_places)}* - {get_team(team_abbrev)}'
-    )
+        get_medal_string(
+            medal,
+            format_number(value,
+                          leading_value_length,
+                          decimal_places=decimal_places), team_abbrev))
   return medalists
+
+
+def get_medal_string(medal_name, value, team_abbrev):
+  return f':{medal_name}_place_medal: *{value}* - {get_team(team_abbrev)}'
 
 
 def is_starter(player):
