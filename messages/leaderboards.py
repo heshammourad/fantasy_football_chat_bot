@@ -99,7 +99,7 @@ def process(team_abbrev, lineup):
     for player in lineup:
         if not utils.is_starter(player):
             continue
-        if player.position not in roster_breakdown.keys():
+        if not player.stats:
             continue
         stats = list(player.stats.values())[0]
         if 'breakdown' in stats:
@@ -107,7 +107,8 @@ def process(team_abbrev, lineup):
                               for key, value in stats['breakdown'].items()
                               if key in td_keys)
 
-        roster_breakdown[player.position].append(player.points)
+        if player.position in roster_breakdown.keys():
+            roster_breakdown[player.position].append(player.points)
 
     for position, scores in roster_breakdown.items():
         sorted_scores = sorted(scores)
